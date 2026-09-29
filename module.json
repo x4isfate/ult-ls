@@ -1,13 +1,21 @@
 {
-  "id": "ult-ld",
+  "id": "ult-ls",
   "title": "ULT's Loading Screen",
-  "description": "A fully customizable, immersive loading screen that replaces Foundry's default loading overlay. Features a simulated progress bar synchronized with real world loading, stage text, rotating lore tips, a configurable palette, custom background image and icon, a simplified mode, and full interaction blocking.",
-  "version": "1.1.0",
+  "description": "A customizable cinematic loading screen for Foundry VTT, built for visuals and atmosphere. Simulated progress synchronized with real world loading, five progress styles and five themes, per-category fonts, an animated icon, lore and game tips with individual display times, loading sound, presets, personal player themes and per-scene targeting — all in one settings Hub with a live preview.",
+  "version": "1.4.0",
   "authors": [
     {
-      "name": "4isfate"
+      "name": "4isfate",
+      "url": "https://github.com/x4isfate"
     }
   ],
+  "url": "https://github.com/x4isfate/ult-ld",
+  "manifest": "https://github.com/x4isfate/ult-ld/releases/latest/download/module.json",
+  "download": "https://github.com/x4isfate/ult-ld/releases/download/v1.4.0/ult-ls.zip",
+  "bugs": "https://github.com/x4isfate/ult-ld/issues",
+  "changelog": "https://github.com/x4isfate/ult-ld/blob/main/CHANGELOG.md",
+  "readme": "https://github.com/x4isfate/ult-ld/blob/main/README.md",
+  "license": "https://github.com/x4isfate/ult-ld/blob/main/LICENSE",
   "compatibility": {
     "minimum": "13",
     "verified": "14",
@@ -17,7 +25,8 @@
     "scripts/main.js"
   ],
   "styles": [
-    "styles/loading.css"
+    "styles/loading.css",
+    "styles/hub.css"
   ],
   "languages": [
     {
@@ -35,7 +44,5 @@
       "name": "Deutsch",
       "path": "lang/de.json"
     }
-  ],
-  "license": "MIT",
-  "readme": "README.md"
+  ]
 }

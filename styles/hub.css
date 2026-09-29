@@ -1,0 +1,1037 @@
+/* ==========================================================================
+   ULT's Loading Screen — Hub stylesheet
+
+   The Hub is the single settings window introduced in 1.3.1. It replaces the
+   native Foundry settings list (which now shows one "Open Hub" button) and
+   the two separate popup editors 1.3.0 used for tips and scenes.
+
+   Theme: a single fixed dark palette below (--hub-* variables on the root
+   .ultls-hub selector). This is a *Hub* theme only — it has no effect on
+   the loading screen itself, which keeps its own independent palette
+   settings on the "palette" tab.
+   ========================================================================== */
+
+/*
+ * Grid, not nested flexbox, and on purpose: the sidebar, the content and the
+ * footer are laid out purely by grid-area, so their position on screen does
+ * not depend on DOM order. That matters here because a flex column with three
+ * children (sidebar, content, footer) had made the sidebar's
+ * `flex: 0 0 210px` set its HEIGHT instead of its width — flex-basis follows
+ * the container's main axis, and the axis was vertical. The result was a
+ * skinny 210px-tall strip on top and every remaining pixel, including the
+ * sidebar's own overflow, folding into one page-wide scrollbar. Grid areas
+ * have no main axis to get that backwards on.
+ */
+.ultls-hub {
+  --hub-radius: 10px;
+  --hub-gap: 0.9rem;
+  --hub-transition: 160ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "sidebar content"
+    "footer  footer";
+  height: 100%;
+  min-height: 0;
+  font-family: "Signika", var(--font-primary, sans-serif);
+  overflow: hidden;
+  container-type: inline-size;
+  container-name: ultls-hub;
+}
+
+/*
+ * A single fixed dark palette. There used to be a light theme toggled via
+ * [data-theme], but nothing in hub.js ever set that attribute (the toggle
+ * button was removed at some point and this half followed it), so neither
+ * block ever matched and the Hub rendered with every one of these variables
+ * undefined. Folding the one palette we keep directly onto the bare
+ * `.ultls-hub` selector removes that failure mode entirely: there is no
+ * attribute to forget to set.
+ */
+.ultls-hub,
+.ultls-changelog {
+  --hub-bg: #14171c;
+  --hub-bg-alt: #1b1f26;
+  --hub-panel: #1e232b;
+  --hub-border: #2c333d;
+  --hub-text: #e7ebf0;
+  --hub-text-muted: #93a0b0;
+  --hub-accent: #5b87ab;
+  --hub-accent-strong: #7fa8cc;
+  --hub-danger: #d97a6a;
+  --hub-success: #7bbf8f;
+}
+
+.ultls-hub * {
+  box-sizing: border-box;
+}
+
+/* Foundry wraps the whole thing in .window-content; make it fill that.
+   Keyed on the class this module puts on its own windows (ApplicationV2 has
+   no `.window-app`), so it covers the Hub, the personal window and the
+   changelog alike. */
+.ultls-hub-app .window-content {
+  padding: 0;
+  background: var(--hub-bg, #14171c);
+  color: var(--hub-text, #e7ebf0);
+}
+
+/* A floor on the outer window itself: below this, no responsive rule below
+   can rescue the layout, so it is simpler to just not allow it. */
+.ultls-hub-app:not(.ultls-changelog-app) {
+  min-width: 480px;
+  min-height: 420px;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar
+   -------------------------------------------------------------------------- */
+
+.ultls-hub-sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.9rem 0.7rem;
+  min-height: 0;
+  background: var(--hub-bg-alt);
+  border-right: 1px solid var(--hub-border);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ultls-hub-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.4rem;
+  border-radius: var(--hub-radius);
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text-muted);
+}
+
+.ultls-hub-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--hub-text);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.ultls-hub-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ultls-hub-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  border: none;
+  border-radius: var(--hub-radius);
+  background: transparent;
+  color: var(--hub-text-muted);
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--hub-transition), color var(--hub-transition);
+}
+
+.ultls-hub-nav-btn i {
+  width: 1.1rem;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.ultls-hub-nav-btn:hover {
+  background: color-mix(in srgb, var(--hub-accent) 12%, transparent);
+  color: var(--hub-text);
+}
+
+.ultls-hub-nav-btn.is-active {
+  background: color-mix(in srgb, var(--hub-accent) 22%, transparent);
+  color: var(--hub-text);
+  font-weight: 600;
+}
+
+.ultls-hub-nav-btn.is-hidden {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Content: preview + scrollable panels
+   -------------------------------------------------------------------------- */
+
+.ultls-hub-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ultls-hub-preview {
+  flex: 0 0 auto;
+  padding: 0.7rem 1rem 0;
+  background: var(--hub-bg);
+}
+
+.ultls-hub-preview-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hub-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+/*
+ * container-type: size turns cqw/cqh/cqmin into "percent of this box" for the
+ * overlay tree inside — the same mechanism the live overlay uses viewport
+ * units for. Without this the preview would size itself against the whole
+ * browser window instead of its own small frame, and read as either
+ * microscopic or absurdly oversized. See the matching [data-preview="true"]
+ * overrides in loading.css.
+ */
+.ultls-hub-preview-frame {
+  position: relative;
+  height: 190px;
+  min-height: 140px;
+  max-height: 60vh;
+  border-radius: var(--hub-radius);
+  /* `resize` needs an overflow value other than `visible`; `hidden` is also
+     what the frame already needed to clip the overlay tree inside it, so
+     enabling the corner drag handle took no extra rule beyond this. */
+  overflow: hidden;
+  resize: vertical;
+  border: 1px solid var(--hub-border);
+  container-type: size;
+  container-name: ultls-preview;
+}
+
+.ultls-hub-preview-frame .ultls-overlay {
+  position: absolute;
+}
+
+.ultls-hub-panels {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.4rem;
+}
+
+.ultls-hub-panel {
+  display: none;
+  flex-direction: column;
+  gap: var(--hub-gap);
+  animation: ultls-hub-fade 140ms ease both;
+}
+
+.ultls-hub-panel.is-active {
+  display: flex;
+}
+
+@keyframes ultls-hub-fade {
+  from { opacity: 0; transform: translateY(4px); }
+}
+
+.ultls-hub-panel-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--hub-text);
+  border: none;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--hub-border);
+}
+
+.ultls-hub-subtitle {
+  margin: 0.4rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--hub-text);
+}
+
+.ultls-hub-lead {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--hub-text);
+  margin: 0;
+}
+
+.ultls-hub-meta {
+  font-size: 0.8rem;
+  color: var(--hub-text-muted);
+  margin: 0;
+}
+
+.ultls-hub .notes {
+  font-size: 0.8rem;
+  color: var(--hub-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Field rows
+   -------------------------------------------------------------------------- */
+
+.ultls-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 260px);
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.55rem 0.2rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--hub-border) 60%, transparent);
+}
+
+.ultls-field:last-child {
+  border-bottom: none;
+}
+
+.ultls-field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.87rem;
+  color: var(--hub-text);
+}
+
+.ultls-hint {
+  color: var(--hub-text-muted);
+  font-size: 0.82rem;
+  cursor: help;
+}
+
+.ultls-field input[type="text"],
+.ultls-field select {
+  width: 100%;
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-size: 0.85rem;
+}
+
+.ultls-hub-advanced {
+  margin-top: 0.2rem;
+  border-top: 1px dashed var(--hub-border);
+  padding-top: 0.3rem;
+}
+
+.ultls-hub-advanced summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--hub-text-muted);
+  padding: 0.3rem 0.1rem;
+}
+
+/* --- toggle switch ------------------------------------------------------- */
+
+.ultls-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  width: 42px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.ultls-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.ultls-toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--hub-border);
+  transition: background var(--hub-transition);
+}
+
+.ultls-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform var(--hub-transition);
+}
+
+.ultls-toggle input:checked + .ultls-toggle-track {
+  background: var(--hub-accent);
+}
+
+.ultls-toggle input:checked + .ultls-toggle-track::after {
+  transform: translateX(18px);
+}
+
+/* --- number: slider + numeric readout ------------------------------------ */
+
+.ultls-number {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ultls-number input[type="range"] {
+  flex: 1 1 auto;
+  accent-color: var(--hub-accent);
+}
+
+.ultls-number input[type="number"] {
+  width: 68px;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-size: 0.82rem;
+  text-align: right;
+}
+
+/* --- colour: native swatch + hex field ------------------------------------ */
+
+.ultls-color {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ultls-color input[type="color"] {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--hub-border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+.ultls-color input[type="text"] {
+  flex: 1 1 auto;
+  font-family: monospace;
+}
+
+/* --- path: readonly field + picker + clear -------------------------------- */
+
+.ultls-path {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ultls-path input[type="text"] {
+  flex: 1 1 auto;
+  font-size: 0.78rem;
+  color: var(--hub-text-muted);
+}
+
+.ultls-path-pick,
+.ultls-path-clear {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hub-border);
+  border-radius: 6px;
+  background: var(--hub-panel);
+  color: var(--hub-text-muted);
+  cursor: pointer;
+  transition: background var(--hub-transition), color var(--hub-transition);
+}
+
+.ultls-path-pick:hover,
+.ultls-path-clear:hover {
+  background: color-mix(in srgb, var(--hub-accent) 16%, transparent);
+  color: var(--hub-text);
+}
+
+/* --- tips textarea --------------------------------------------------------- */
+
+.ultls-tips-area {
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--hub-radius);
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-family: monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.ultls-tips-seed-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.ultls-seed-btn {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--hub-radius);
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background var(--hub-transition), border-color var(--hub-transition);
+}
+
+.ultls-seed-btn:hover {
+  background: color-mix(in srgb, var(--hub-accent) 16%, transparent);
+  border-color: var(--hub-accent);
+}
+
+.ultls-seed-btn i {
+  color: var(--hub-accent-strong);
+}
+
+/* --- scene checklist -------------------------------------------------------- */
+
+.ultls-scene-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ultls-scene-action {
+  flex: 1 1 auto;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background var(--hub-transition);
+}
+
+.ultls-scene-action:hover {
+  background: color-mix(in srgb, var(--hub-accent) 16%, transparent);
+}
+
+.ultls-scene-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius);
+  padding: 0.3rem;
+  background: var(--hub-panel);
+}
+
+.ultls-scene-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.3rem 0.45rem;
+  border-radius: 5px;
+}
+
+.ultls-scene-row:hover {
+  background: color-mix(in srgb, var(--hub-accent) 10%, transparent);
+}
+
+.ultls-scene-row input {
+  flex: 0 0 auto;
+}
+
+.ultls-scene-row label {
+  flex: 1 1 auto;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.ultls-scene-badge {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--hub-accent);
+  color: #fff;
+  opacity: 0.9;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.ultls-hub-footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 1rem;
+  background: var(--hub-bg-alt);
+  border-top: 1px solid var(--hub-border);
+  font-size: 0.78rem;
+}
+
+.ultls-hub-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--hub-text-muted);
+}
+
+.ultls-hub-status.is-saved i {
+  color: var(--hub-success);
+}
+
+.ultls-hub-status.is-pending i {
+  color: var(--hub-accent-strong);
+  animation: ultls-hub-spin 1.4s linear infinite;
+}
+
+@keyframes ultls-hub-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ultls-hub-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  color: var(--hub-text-muted);
+  text-align: center;
+}
+
+.ultls-hub-signature {
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+
+.ultls-hub-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ultls-hub-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--hub-transition), color var(--hub-transition);
+}
+
+.ultls-hub-icon-btn:hover {
+  background: color-mix(in srgb, var(--hub-accent) 18%, transparent);
+  color: var(--hub-text);
+}
+
+.ultls-hub-icon-btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ultls-hub-icon-btn.is-disabled:hover {
+  background: var(--hub-panel);
+  color: var(--hub-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Narrow window
+   -------------------------------------------------------------------------- */
+
+@container ultls-hub (max-width: 640px) {
+  /* `flex` has no effect on a grid item; the sidebar's actual width comes
+     from `.ultls-hub`'s grid-template-columns, so that is what narrows here
+     instead of a flex-basis that quietly did nothing. */
+  .ultls-hub {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+  .ultls-hub-sidebar .ultls-hub-search,
+  .ultls-hub-nav-btn span {
+    display: none;
+  }
+  .ultls-hub-nav-btn {
+    justify-content: center;
+  }
+  .ultls-field {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+}
+
+
+/* ==========================================================================
+   1.4 additions: shared buttons and rows, notices, the tips editor, presets,
+   sound, the "what's new" window and the personal (player) window.
+   ========================================================================== */
+
+.ultls-changelog * {
+  box-sizing: border-box;
+}
+
+.ultls-changelog {
+  --hub-radius: 10px;
+  --hub-gap: 0.9rem;
+  --hub-transition: 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ultls-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ultls-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.8rem;
+  border-radius: 7px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-size: 0.83rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background var(--hub-transition), border-color var(--hub-transition), color var(--hub-transition);
+}
+
+.ultls-btn:hover {
+  background: color-mix(in srgb, var(--hub-accent) 16%, transparent);
+  border-color: var(--hub-accent);
+}
+
+.ultls-btn i {
+  color: var(--hub-accent-strong);
+}
+
+.ultls-btn.is-primary {
+  background: var(--hub-accent);
+  border-color: var(--hub-accent);
+  color: #fff;
+}
+
+.ultls-btn.is-primary i {
+  color: #fff;
+}
+
+.ultls-btn.is-primary:hover {
+  background: var(--hub-accent-strong);
+  border-color: var(--hub-accent-strong);
+}
+
+.ultls-btn.is-danger i {
+  color: var(--hub-danger);
+}
+
+.ultls-btn.is-danger:hover {
+  border-color: var(--hub-danger);
+  background: color-mix(in srgb, var(--hub-danger) 16%, transparent);
+}
+
+.ultls-btn[data-armed="true"] {
+  background: var(--hub-danger);
+  border-color: var(--hub-danger);
+  color: #fff;
+}
+
+.ultls-btn[data-armed="true"] i {
+  color: #fff;
+}
+
+.ultls-notice {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--hub-radius);
+  border: 1px solid color-mix(in srgb, var(--hub-accent) 45%, var(--hub-border));
+  background: color-mix(in srgb, var(--hub-accent) 10%, transparent);
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.ultls-notice.is-locked {
+  border-color: color-mix(in srgb, var(--hub-danger) 45%, var(--hub-border));
+  background: color-mix(in srgb, var(--hub-danger) 8%, transparent);
+}
+
+/* --- tips editor ------------------------------------------------------------ */
+
+.ultls-tips-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ultls-tips-bar-label {
+  font-size: 0.85rem;
+  color: var(--hub-text);
+}
+
+.ultls-tips-bar-unit {
+  font-size: 0.78rem;
+  color: var(--hub-text-muted);
+}
+
+.ultls-tip-sec {
+  width: 72px;
+  padding: 0.32rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-size: 0.82rem;
+  text-align: right;
+}
+
+.ultls-tip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.ultls-tip-row {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: 0.55rem;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius);
+  background: var(--hub-panel);
+}
+
+.ultls-tip-num {
+  padding-top: 0.4rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--hub-text-muted);
+}
+
+.ultls-tip-text {
+  width: 100%;
+  min-height: 2.6rem;
+  resize: vertical;
+  padding: 0.4rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-bg);
+  color: var(--hub-text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.ultls-tip-sec-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding-top: 0.25rem;
+}
+
+.ultls-tip-tools {
+  display: flex;
+  gap: 0.25rem;
+  padding-top: 0.2rem;
+}
+
+.ultls-icon-btn-sm {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--hub-border);
+  border-radius: 6px;
+  background: var(--hub-bg);
+  color: var(--hub-text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background var(--hub-transition), color var(--hub-transition), border-color var(--hub-transition);
+}
+
+.ultls-icon-btn-sm:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--hub-accent) 16%, transparent);
+  color: var(--hub-text);
+}
+
+.ultls-icon-btn-sm:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ultls-icon-btn-sm.is-danger:hover:not(:disabled) {
+  color: var(--hub-danger);
+  border-color: var(--hub-danger);
+}
+
+.ultls-tip-empty {
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+  color: var(--hub-text-muted);
+  font-size: 0.85rem;
+  border: 1px dashed var(--hub-border);
+  border-radius: var(--hub-radius);
+}
+
+/* --- presets ---------------------------------------------------------------- */
+
+.ultls-preset-paste {
+  width: 100%;
+  resize: vertical;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--hub-radius);
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  color: var(--hub-text);
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.ultls-import-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--hub-radius);
+  border: 1px solid var(--hub-border);
+  background: var(--hub-panel);
+  font-size: 0.87rem;
+}
+
+.ultls-import-summary[hidden] {
+  display: none;
+}
+
+.ultls-import-summary p {
+  margin: 0;
+}
+
+.ultls-import-summary.is-error {
+  border-color: var(--hub-danger);
+  color: var(--hub-danger);
+}
+
+/* --- footer helper -------------------------------------------------------- */
+
+.ultls-hub-icon-wrap {
+  display: inline-flex;
+}
+
+/* --- "what's new" window ---------------------------------------------------- */
+
+/* Only the list of changes scrolls; the buttons below it always stay in view. */
+.ultls-changelog-app .window-content {
+  overflow: hidden;
+}
+
+.ultls-changelog-release {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+}
+
+.ultls-changelog-footer {
+  flex: 0 0 auto;
+}
+
+.ultls-changelog {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 72vh;
+  padding: 1.2rem 1.4rem 1rem;
+  font-family: "Signika", var(--font-primary, sans-serif);
+  background: var(--hub-bg);
+  color: var(--hub-text);
+}
+
+.ultls-changelog-title {
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.3rem;
+  border: none;
+  border-bottom: 1px solid var(--hub-border);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--hub-text);
+}
+
+.ultls-changelog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.ultls-changelog-list li::marker {
+  color: var(--hub-accent-strong);
+}
+
+.ultls-changelog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@container ultls-hub (max-width: 640px) {
+  .ultls-tip-row {
+    grid-template-columns: 1.6rem minmax(0, 1fr);
+  }
+  .ultls-tip-sec-wrap,
+  .ultls-tip-tools {
+    grid-column: 2;
+  }
+}
+/* --- reset control (Home and Presets tabs) ------------------------------- */
+
+.ultls-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  color: var(--hub-text-muted);
+  cursor: pointer;
+}
+
+.ultls-check input {
+  margin: 0;
+  accent-color: var(--hub-accent);
+}
