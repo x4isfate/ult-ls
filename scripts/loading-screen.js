@@ -518,6 +518,8 @@ export class LoadingOverlay {
 
     /** Loading sound, if one is configured. Owned by this overlay, but outlives it while fading. */
     this.sound = null;
+    /** The "click to turn the sound on" hint, present only while the browser is blocking playback. */
+    this.soundHint = null;
 
     log("constructed", {
       style: cfg.progressStyle,
@@ -624,15 +626,39 @@ export class LoadingOverlay {
       loop: this.cfg.soundLoop,
       fadeInMs: this.cfg.soundFadeInMs,
       fadeOutMs: this.cfg.soundFadeOutMs,
-      log: (message) => warn(message)
+      log: (message) => warn(message),
+      onWaiting: () => this.#showSoundHint(),
+      onPlaying: () => this.#hideSoundHint()
     });
     this.sound.start();
+  }
+
+  /**
+   * Browsers do not allow sound before the person has clicked, tapped or pressed
+   * a key on the page. While the sound is waiting for that, a small hint says so
+   * — otherwise a silent loading screen just looks broken. It is only ever
+   * shown when the browser actually refused playback.
+   */
+  #showSoundHint() {
+    if (this.soundHint || !this.root || this.closed) return;
+
+    const hint = el("div", "ultls-sound-hint", { role: "status" });
+    hint.appendChild(el("i", "fa-solid fa-volume-high", { "aria-hidden": "true" }));
+    hint.appendChild(el("span", null, {}, game.i18n.localize("ULTLS.Overlay.SoundHint")));
+    this.root.appendChild(hint);
+    this.soundHint = hint;
+  }
+
+  #hideSoundHint() {
+    this.soundHint?.remove();
+    this.soundHint = null;
   }
 
   /** Hand the sound over to its own fade-out; it keeps fading after the overlay is gone. */
   #endSound() {
     const sound = this.sound;
     this.sound = null;
+    this.#hideSoundHint();
     sound?.fadeOutAndStop();
   }
 

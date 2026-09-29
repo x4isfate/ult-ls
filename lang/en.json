@@ -16,6 +16,7 @@
   "ULTLS.Stage.Finalize2": "Almost there",
 
   "ULTLS.Tip.Sample": "Add your own tips on the \"Lore & Game Tips\" tab to replace this sample line.",
+  "ULTLS.Overlay.SoundHint": "Click anywhere to turn the sound on",
 
   "ULTLS.Hub.MenuName": "Open Hub",
   "ULTLS.Hub.MenuLabel": "Open Hub",
@@ -58,7 +59,7 @@
   "ULTLS.Hub.Sound.Stop": "Stop",
   "ULTLS.Hub.Sound.Empty": "No sound file chosen yet. Pick an audio file above to add a loading sound.",
   "ULTLS.Hub.Sound.EmptyPlayer": "The Game Master has not set a loading sound.",
-  "ULTLS.Hub.Sound.Note": "Browsers may block sound until the first click on the page. In that case it starts after that click, and does not play at all if the world has finished loading by then.",
+  "ULTLS.Hub.Sound.Note": "Web browsers only allow sound after someone has clicked, tapped or pressed a key on the page — a browser rule that no module can bypass. Until then the loading screen shows a small \"Click anywhere to turn the sound on\" hint, and the sound starts with the first click. The Foundry desktop app has no such limit.",
 
   "ULTLS.Hub.Tips.DelayAllLabel": "Same time for all tips:",
   "ULTLS.Hub.Tips.DelayAllApply": "Apply to all",
@@ -146,6 +147,9 @@
   "ULTLS.Changelog.Close": "Close",
   "ULTLS.Changelog.Dismiss": "Don't show until the next update",
   "ULTLS.Changelog.DismissedNote": "Got it. This window will stay away until the next update of the module.",
+  "ULTLS.Changelog.1_4_1.Title": "a sound fix",
+  "ULTLS.Changelog.1_4_1.Item.01": "Sound: browsers only allow sound after a click, tap or key press. While it is blocked, the loading screen now shows a small \"Click anywhere to turn the sound on\" hint, and the sound starts with the first click.",
+  "ULTLS.Changelog.1_4_1.Item.02": "Sound: on touch screens the very first tap now starts the sound; it used to need a second one.",
   "ULTLS.Changelog.1_4_0.Title": "the Hub update",
   "ULTLS.Changelog.1_4_0.Item.01": "One settings window: the Hub replaces the long settings list with tabs, search and a live preview.",
   "ULTLS.Changelog.1_4_0.Item.02": "Five themes — Idaris, Monochrome, Fantasy, Dark Fantasy and Sci-Fi — set colours, fonts and the progress style in one click.",

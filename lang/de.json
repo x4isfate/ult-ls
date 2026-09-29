@@ -16,6 +16,7 @@
   "ULTLS.Stage.Finalize2": "Gleich geschafft",
 
   "ULTLS.Tip.Sample": "Füge auf der Registerkarte „Lore- & Spieltipps“ eigene Tipps hinzu, um diese Beispielzeile zu ersetzen.",
+  "ULTLS.Overlay.SoundHint": "Klicke irgendwohin, um den Ton einzuschalten",
 
   "ULTLS.Hub.MenuName": "Einstellungszentrale öffnen",
   "ULTLS.Hub.MenuLabel": "Einstellungszentrale öffnen",
@@ -58,7 +59,7 @@
   "ULTLS.Hub.Sound.Stop": "Stopp",
   "ULTLS.Hub.Sound.Empty": "Du hast noch keine Tondatei gewählt. Wähle oben eine Audiodatei, um einen Ladeton hinzuzufügen.",
   "ULTLS.Hub.Sound.EmptyPlayer": "Die Spielleitung hat keinen Ladeton festgelegt.",
-  "ULTLS.Hub.Sound.Note": "Browser können Ton blockieren, bis zum ersten Mal auf die Seite geklickt wurde. Dann beginnt er erst nach diesem Klick – und gar nicht, wenn die Welt bis dahin schon geladen ist.",
+  "ULTLS.Hub.Sound.Note": "Browser erlauben Ton erst, nachdem auf der Seite geklickt, getippt oder eine Taste gedrückt wurde – eine Regel des Browsers, die kein Modul umgehen kann. Bis dahin zeigt der Ladebildschirm den Hinweis „Klicke irgendwohin, um den Ton einzuschalten“, und der Ton beginnt mit dem ersten Klick. In der Foundry-Desktop-App gibt es diese Einschränkung nicht.",
 
   "ULTLS.Hub.Tips.DelayAllLabel": "Gleiche Anzeigedauer für alle Tipps:",
   "ULTLS.Hub.Tips.DelayAllApply": "Auf alle anwenden",
@@ -146,6 +147,9 @@
   "ULTLS.Changelog.Close": "Schließen",
   "ULTLS.Changelog.Dismiss": "Bis zum nächsten Update nicht mehr anzeigen",
   "ULTLS.Changelog.DismissedNote": "Verstanden. Dieses Fenster erscheint erst nach dem nächsten Update des Moduls wieder.",
+  "ULTLS.Changelog.1_4_1.Title": "Korrektur beim Ton",
+  "ULTLS.Changelog.1_4_1.Item.01": "Ton: Browser erlauben Ton erst nach einem Klick, einer Berührung oder einem Tastendruck. Solange er blockiert ist, zeigt der Ladebildschirm jetzt den Hinweis „Klicke irgendwohin, um den Ton einzuschalten“, und der Ton beginnt mit dem ersten Klick.",
+  "ULTLS.Changelog.1_4_1.Item.02": "Ton: Auf Touchscreens startet schon die allererste Berührung den Ton; bisher war eine zweite nötig.",
   "ULTLS.Changelog.1_4_0.Title": "das Update der Einstellungszentrale",
   "ULTLS.Changelog.1_4_0.Item.01": "Ein Einstellungsfenster: Die Einstellungszentrale ersetzt die lange Liste durch Registerkarten, Suche und eine Live-Vorschau.",
   "ULTLS.Changelog.1_4_0.Item.02": "Fünf Themen – Idaris, Monochrom, Fantasy, Dark Fantasy und Sci-Fi – legen Farben, Schriften und den Fortschrittsstil mit einem Klick fest.",

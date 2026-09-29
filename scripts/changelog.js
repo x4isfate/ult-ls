@@ -20,7 +20,10 @@ import { MODULE_ID, getSetting, setSetting } from "./settings.js";
 import { el } from "./loading-screen.js";
 
 /** Newest first. `id` is the version with dots as underscores; `items` counts the bullet strings. */
-export const CHANGELOG = [{ version: "1.4.0", id: "1_4_0", items: 13 }];
+export const CHANGELOG = [
+  { version: "1.4.1", id: "1_4_1", items: 2 },
+  { version: "1.4.0", id: "1_4_0", items: 13 }
+];
 
 function loc(key) {
   return game.i18n.localize(key);

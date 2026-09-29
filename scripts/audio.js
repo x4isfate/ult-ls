@@ -7,12 +7,16 @@
  * (start, fade out, stop).
  *
  * Browsers refuse to start sound on a page the user has not interacted with
- * yet. Foundry's desktop app disables that rule, a normal browser does not. So
- * when the first `play()` is rejected the sound is not abandoned: it waits for
- * the first click or key press anywhere on the page and starts then, fading in
- * as usual. If the world finishes loading before that happens the sound simply
- * never plays, which is the right outcome — a loading sound that begins after
- * the loading is over would be worse than none.
+ * yet, and no script can lift that rule (Foundry's own audio waits for the
+ * first gesture for the same reason). Foundry's desktop app disables it, a
+ * normal browser does not. So when playback is refused the sound is not
+ * abandoned: it waits for the first click, tap or key press anywhere on the
+ * page and starts then, fading in as usual, and it reports that it is waiting
+ * (`onWaiting`) so the overlay can show a "click to turn the sound on" hint
+ * instead of leaving people wondering why it is silent. If the world finishes
+ * loading before that happens the sound simply never plays, which is the right
+ * outcome — a loading sound that begins after the loading is over would be
+ * worse than none.
  *
  * The sound outlives the overlay on purpose. `fadeOutAndStop()` keeps running
  * after the overlay element is gone, so a fade-out longer than the overlay's
@@ -52,20 +56,34 @@ export class LoadingSound {
    * @param {number} options.fadeInMs
    * @param {number} options.fadeOutMs
    * @param {(message: string) => void} [options.log]
+   * @param {() => void} [options.onWaiting]  Playback was refused; waiting for a gesture.
+   * @param {() => void} [options.onPlaying]  Playback has actually started.
    */
-  constructor({ url, volume = 80, loop = true, fadeInMs = 1500, fadeOutMs = 1500, log = () => {} }) {
+  constructor({
+    url,
+    volume = 80,
+    loop = true,
+    fadeInMs = 1500,
+    fadeOutMs = 1500,
+    log = () => {},
+    onWaiting = null,
+    onPlaying = null
+  }) {
     this.url = url;
     this.target = clamp01(volume / 100) * interfaceGain();
     this.loop = Boolean(loop);
     this.fadeInMs = Math.max(0, Number(fadeInMs) || 0);
     this.fadeOutMs = Math.max(0, Number(fadeOutMs) || 0);
     this.log = log;
+    this.onWaiting = onWaiting;
+    this.onPlaying = onPlaying;
 
     this.audio = null;
     this.fadeTimer = null;
     this.stopped = false;
     this.playing = false;
     this.gestureHandler = null;
+    this.blockedReported = false;
     /** Called once when playback ends by itself or the sound is stopped. */
     this.onEnd = null;
   }
@@ -94,7 +112,23 @@ export class LoadingSound {
       return false;
     }
 
+    // Where the browser can say so in advance (Firefox), do not make an attempt
+    // that is certain to be refused; go straight to waiting for a gesture.
+    if (LoadingSound.autoplayPolicy() === "disallowed") {
+      this.#blocked();
+      return false;
+    }
+
     return this.#play();
+  }
+
+  /** "allowed" / "allowed-muted" / "disallowed", or null where the browser cannot tell us. */
+  static autoplayPolicy() {
+    try {
+      return navigator.getAutoplayPolicy?.("mediaelement") ?? null;
+    } catch (err) {
+      return null;
+    }
   }
 
   async #play() {
@@ -104,11 +138,11 @@ export class LoadingSound {
       await this.audio.play();
       this.playing = true;
       this.#fadeTo(this.target, this.fadeInMs);
+      this.onPlaying?.();
       return true;
     } catch (err) {
       if (err?.name === "NotAllowedError") {
-        this.log("sound blocked by the browser until the first click or key press; waiting for it");
-        this.#waitForGesture();
+        this.#blocked();
       } else if (err?.name !== "AbortError") {
         this.log(`sound could not be played: ${err?.message ?? err}`);
       }
@@ -116,14 +150,35 @@ export class LoadingSound {
     }
   }
 
+  /** Playback was refused: say so, and start at the next gesture instead. */
+  #blocked() {
+    this.#waitForGesture();
+
+    // A touch can be refused once and then accepted on release, so this may run
+    // more than once for a single tap. Report it only the first time.
+    if (this.blockedReported) return;
+    this.blockedReported = true;
+    this.log("sound blocked by the browser until the first click, tap or key press; waiting for it");
+    this.onWaiting?.();
+  }
+
   /**
    * Window-level capture listeners run before the overlay's own document-level
    * input blockers, so the click that unlocks audio is not swallowed by them.
+   *
+   * The list is wide on purpose. Browsers only count some events as "user
+   * activation" — a mouse counts on press, but touch and pen only on release —
+   * so listening for the press alone left touch screens needing a second tap.
+   * If an event turns out not to count, the retry in #play() simply waits for
+   * the next one.
    */
   #waitForGesture() {
     if (this.gestureHandler) return;
 
-    const events = ["pointerdown", "keydown", "touchstart"];
+    const events = [
+      "pointerdown", "pointerup", "mousedown", "mouseup", "click", "auxclick",
+      "contextmenu", "touchstart", "touchend", "keydown"
+    ];
     const handler = () => {
       this.#clearGesture();
       this.#play();

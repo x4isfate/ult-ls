@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1 — sound fix
+
+### Fixed
+- **Sound**: browsers only allow sound after a click, tap or key press — a browser rule that no module can bypass, and one Foundry's own audio also follows. While playback is blocked, the loading screen now shows a small "Click anywhere to turn the sound on" hint, and the sound starts with the first click instead of leaving people guessing why it is silent.
+- **Sound**: on touch screens the very first tap now starts the sound; it used to need a second one.
+
 ## 1.4.0 — the Hub update
 
 **Module id changed to `ult-ls`.** Earlier releases used `ult-ld`. Install this version, and settings saved by the old copy are carried over automatically the first time the Game Master enters a world; then disable or remove the old `ult-ld` copy.

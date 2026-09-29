@@ -847,3 +847,60 @@ body.ultls-blocking {
 .ultls-overlay[data-preview="true"] .ultls-percent {
   font-size: 0.9rem;
 }
+
+
+/* --------------------------------------------------------------------------
+   Sound hint — shown only while the browser is blocking the loading sound
+   -------------------------------------------------------------------------- */
+
+/*
+ * Browsers only allow sound after a click, tap or key press. Until then this
+ * small pill says so, in the corner, out of the way of the progress element
+ * and the tips. It ignores the pointer on purpose: a click anywhere on the page
+ * counts as the gesture, so the hint never needs to be aimed at.
+ */
+.ultls-sound-hint {
+  position: fixed;
+  z-index: 3;
+  right: calc(var(--ultls-edge) * 1vmin + 0.8rem);
+  bottom: calc(var(--ultls-edge) * 1vmin + 0.8rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: min(70vw, 34rem);
+  padding: 0.55rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--ultls-border) 70%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ultls-overlay-bg) 82%, transparent);
+  color: var(--ultls-accent);
+  font-family: var(--ultls-font-primary, inherit);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+  box-shadow: 0 0 22px -8px var(--ultls-glow);
+  animation: ultls-sound-hint-in 0.5s ease both, ultls-sound-hint-pulse 2.4s ease-in-out 0.5s infinite;
+}
+
+.ultls-sound-hint i {
+  color: var(--ultls-icon-color);
+}
+
+@keyframes ultls-sound-hint-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes ultls-sound-hint-pulse {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+.ultls-overlay[data-simple="true"] .ultls-sound-hint {
+  animation: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ultls-overlay .ultls-sound-hint {
+    animation: none !important;
+  }
+}
