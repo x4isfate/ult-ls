@@ -5,7 +5,7 @@
 1. В Foundry откройте **Add-on Modules → Install Module**.
 2. В поле **Manifest URL** вставьте:
    ```
-   https://github.com/x4isfate/ult-ld/releases/latest/download/module.json
+   https://github.com/x4isfate/ult-ls/releases/latest/download/module.json
    ```
 3. Нажмите **Install**, затем включите модуль в мире (**Manage Modules**).
 
@@ -60,7 +60,7 @@
 
 ## Как выпустить следующую версию на GitHub
 
-Репозиторий: <https://github.com/x4isfate/ult-ld>
+Репозиторий: <https://github.com/x4isfate/ult-ls>
 
 Релиз собирается автоматически: достаточно поднять версию и создать тег.
 

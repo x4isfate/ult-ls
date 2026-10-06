@@ -12,7 +12,7 @@ A customizable cinematic loading screen for [Foundry VTT](https://foundryvtt.com
 In Foundry: **Add-on Modules → Install Module**, paste this into **Manifest URL**, and press Install:
 
 ```
-https://github.com/x4isfate/ult-ld/releases/latest/download/module.json
+https://github.com/x4isfate/ult-ls/releases/latest/download/module.json
 ```
 
 After that, updates arrive through the normal **Update** button in Foundry. A step-by-step guide in Russian is in [INSTALL-RU.md](INSTALL-RU.md).
@@ -50,7 +50,7 @@ After that, updates arrive through the normal **Update** button in Foundry. A st
 
 ## Reporting bugs
 
-Found something broken or have an idea? Please open an issue: <https://github.com/x4isfate/ult-ld/issues>
+Found something broken or have an idea? Please open an issue: <https://github.com/x4isfate/ult-ls/issues>
 
 ## API
 

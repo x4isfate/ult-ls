@@ -9,13 +9,13 @@
       "url": "https://github.com/x4isfate"
     }
   ],
-  "url": "https://github.com/x4isfate/ult-ld",
-  "manifest": "https://github.com/x4isfate/ult-ld/releases/latest/download/module.json",
-  "download": "https://github.com/x4isfate/ult-ld/releases/download/v1.4.1/ult-ls.zip",
-  "bugs": "https://github.com/x4isfate/ult-ld/issues",
-  "changelog": "https://github.com/x4isfate/ult-ld/blob/main/CHANGELOG.md",
-  "readme": "https://github.com/x4isfate/ult-ld/blob/main/README.md",
-  "license": "https://github.com/x4isfate/ult-ld/blob/main/LICENSE",
+  "url": "https://github.com/x4isfate/ult-ls",
+  "manifest": "https://github.com/x4isfate/ult-ls/releases/latest/download/module.json",
+  "download": "https://github.com/x4isfate/ult-ls/releases/download/v1.4.1/ult-ls.zip",
+  "bugs": "https://github.com/x4isfate/ult-ls/issues",
+  "changelog": "https://github.com/x4isfate/ult-ls/blob/main/CHANGELOG.md",
+  "readme": "https://github.com/x4isfate/ult-ls/blob/main/README.md",
+  "license": "https://github.com/x4isfate/ult-ls/blob/main/LICENSE",
   "compatibility": {
     "minimum": "13",
     "verified": "14",

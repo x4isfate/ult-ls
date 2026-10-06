@@ -53,7 +53,7 @@ import { buildOverlayDOM, el, resolvePath } from "./loading-screen.js";
 import { LoadingSound } from "./audio.js";
 import { maybeShowChangelog, installedVersion } from "./changelog.js";
 
-const GITHUB_URL = "https://github.com/x4isfate/ult-ld";
+const GITHUB_URL = "https://github.com/x4isfate/ult-ls";
 
 /** Tabs, in the order they appear in the sidebar. */
 const TABS = [
