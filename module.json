@@ -2,7 +2,7 @@
   "id": "ult-ls",
   "title": "ULT's Loading Screen",
   "description": "A customizable cinematic loading screen for Foundry VTT, built for visuals and atmosphere. Simulated progress synchronized with real world loading, five progress styles and five themes, per-category fonts, an animated icon, lore and game tips with individual display times, loading sound, presets, personal player themes and per-scene targeting — all in one settings Hub with a live preview.",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "authors": [
     {
       "name": "4isfate",
@@ -11,7 +11,7 @@
   ],
   "url": "https://github.com/x4isfate/ult-ls",
   "manifest": "https://github.com/x4isfate/ult-ls/releases/latest/download/module.json",
-  "download": "https://github.com/x4isfate/ult-ls/releases/download/v1.4.1/ult-ls.zip",
+  "download": "https://github.com/x4isfate/ult-ls/releases/download/v1.4.2/ult-ls.zip",
   "bugs": "https://github.com/x4isfate/ult-ls/issues",
   "changelog": "https://github.com/x4isfate/ult-ls/blob/main/CHANGELOG.md",
   "readme": "https://github.com/x4isfate/ult-ls/blob/main/README.md",

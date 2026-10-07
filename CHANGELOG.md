@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.2 — documentation fixes
+
+### Fixed
+- Documentation: corrected the progress description and the archive name in the Russian install guide.
+
 ## 1.4.1 — sound fix
 
 ### Fixed
