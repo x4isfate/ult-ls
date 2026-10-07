@@ -22,7 +22,7 @@ After that, updates arrive through the normal **Update** button in Foundry. A st
 ## Features
 
 **Progress**
-- Simulated progress that tracks real world loading and never runs ahead of it, held at 90–99% until the world is genuinely ready
+- Simulated progress that tracks real world loading and never runs ahead of it; it reaches 100% only when the world is genuinely ready
 - Five progress styles: linear bar, segmented blocks, circular ring, row of dots, dashed trail with a travelling spark
 - Seven screen zones for the progress element, with an optional frame
 - Configurable minimum and maximum on-screen time, final hold and safety timeout
